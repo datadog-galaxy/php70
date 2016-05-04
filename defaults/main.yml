@@ -3,3 +3,5 @@ user: www
 group: www
 modules: []
 params: {}
+php_pool_file: /etc/php-fpm.d/www.conf
+php_ini: /etc/php.ini

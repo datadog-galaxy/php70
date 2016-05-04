@@ -35,3 +35,33 @@
 
 - name: PHP | RUN FPM ON STARTUP
   service: name=php-fpm enabled=yes state=started
+
+- name: PHP | UPDATE FPM CONFIG
+  lineinfile: dest={{ php_pool_file }} regexp='^;?catch_workers_output\s?=.*$' line=catch_workers_output=yes
+  notify: restart php-fpm
+
+- name: PHP | UPDATE FPM SOCKET
+  lineinfile: dest={{ php_pool_file }} regexp='^;?listen\s?=.*$' line=listen=127.0.0.1:9000
+  notify: restart php-fpm
+
+- name: PHP | SET FPM GROUP
+  lineinfile: dest={{ php_pool_file }} regexp="^group\s?=.*$" line="group = {{ group }}"
+  notify: restart php-fpm
+
+- name: PHP | SET FPM USER
+  lineinfile: dest={{ php_pool_file }} regexp="^user\s?=.*$" line="user = {{ user }}"
+  notify: restart php-fpm
+
+- name: PHP | SET OWNERSHIP
+  file: path=/var/lib/php/session owner={{ user }} group={{ group }} state=directory
+  notify: restart php-fpm
+
+- name: PHP | SET TIMEZONE
+  lineinfile: dest={{ item }} regexp='^;?date\.timezone\s?=.*$' line="date.timezone={{ timezone }}"
+  with_items: php_ini
+  notify: reload php-fpm
+
+- name: PHP | SET PHP INI PARAMS
+  lineinfile: dest={{ php_ini }} regexp='^;?{{ item.key }} *=.*$' line="{{ item.key }}={{ item.value }}"
+  with_dict: params
+  notify: reload php-fpm
