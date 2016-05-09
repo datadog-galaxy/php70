@@ -1,6 +1,6 @@
 timezone: UTC
-user: www
-group: www
+user: apache
+group: apache
 modules: []
 params: {}
 php_pool_file: /etc/php-fpm.d/www.conf
