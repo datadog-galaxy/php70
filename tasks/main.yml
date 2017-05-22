@@ -56,12 +56,7 @@
   file: path=/var/lib/php/session owner={{ user }} group={{ group }} state=directory
   notify: restart php-fpm
 
-- name: PHP | SET TIMEZONE
-  lineinfile: dest={{ item }} regexp='^;?date\.timezone\s?=.*$' line="date.timezone={{ timezone }}"
-  with_items: php_ini
-  notify: reload php-fpm
-
 - name: PHP | SET PHP INI PARAMS
   lineinfile: dest={{ php_ini }} regexp='^;?{{ item.key }} *=.*$' line="{{ item.key }}={{ item.value }}"
-  with_dict: params
+  with_dict: "{{ params }}"
   notify: reload php-fpm
